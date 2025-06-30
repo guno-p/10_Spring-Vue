@@ -24,8 +24,8 @@ import javax.sql.DataSource;
  */
 @Configuration
 @PropertySource({"classpath:/application.properties"})
-@MapperScan(basePackages = {"org.scoula.board.mapper"}) // Mapper 인터페이스 스캔 설정
-@ComponentScan(basePackages = {"org.scoula.board.service"})
+@MapperScan(basePackages = {"org.scoula.board.mapper", "org.scoula.member.mapper"}) // Mapper 인터페이스 스캔 설정
+@ComponentScan(basePackages = {"org.scoula.board.service", "org.scoula.member.service"})
 @EnableTransactionManagement
 public class RootConfig {
 

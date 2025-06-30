@@ -1,10 +1,13 @@
 <script setup>
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth.js'; // <- 추가
 
+const store = useAuthStore(); // <- 추가
 const router = useRouter();
 const logout = (e) => {
   // 로그아웃
   // pinia 상태 관리 필요
+  store.logout(); // 스토어의 로그아웃 액션 호출
   router.push('/');
 };
 </script>
