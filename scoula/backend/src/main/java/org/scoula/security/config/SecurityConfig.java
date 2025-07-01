@@ -54,22 +54,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final CustomAccessDeniedHandler accessDeniedHandler;
   private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
-
   // 커스텀 인증 필터 추가
   @Autowired
   private JwtUsernamePasswordAuthenticationFilter jwtUsernamePasswordAuthenticationFilter;
-
-
-
 
   // PasswordEncoder(BCryptPasswordEncoder) Bean 등록 설정
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();  // BCrypt 해시 함수 사용
   }
-
-
-
 
   // 문자셋 필터 메서드
   public CharacterEncodingFilter encodingFilter() {
@@ -84,7 +77,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   public AuthenticationManager authenticationManager() throws Exception {
     return super.authenticationManager();
   }
-
 
   @Override
   public void configure(HttpSecurity http) throws Exception {
@@ -105,8 +97,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .authenticationEntryPoint(authenticationEntryPoint)  // 401 에러 처리
         .accessDeniedHandler(accessDeniedHandler);           // 403 에러 처리
 
-
-
     //  HTTP 보안 설정
     http.httpBasic().disable()      // 기본 HTTP 인증 비활성화
             .csrf().disable()           // CSRF 보호 비활성화 (REST API에서는 불필요)
@@ -114,16 +104,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()        // 세션 관리 설정
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);  // 무상태 모드
 
-
     http
       .authorizeRequests() // 경로별 접근 권한 설정
       .antMatchers(HttpMethod.OPTIONS).permitAll()  //  org.springframework.http.HttpMethod
-       // 일단 모든 접근 허용
-      .anyRequest().permitAll();
+
+      // 🌐 회원 관련 공개 API (인증 불필요)
+      .antMatchers(HttpMethod.GET, "/api/member/checkusername/**").permitAll()     // ID 중복 체크
+      .antMatchers(HttpMethod.POST, "/api/member").permitAll()                    // 회원가입
+      .antMatchers(HttpMethod.GET, "/api/member/*/avatar").permitAll()            // 아바타 이미지
+
+      // 🔒 회원 관련 인증 필요 API
+      .antMatchers(HttpMethod.PUT, "/api/member/**").authenticated() // 회원 정보 수정, 비밀번호 변경
+
+      .anyRequest().permitAll(); // 나머지 허용
   }
-
-
-
 
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -133,10 +127,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // UserDetailsService와 PasswordEncoder 설정
     auth.userDetailsService(userDetailsService)  // 커스텀 서비스 사용
             .passwordEncoder(passwordEncoder()); // BCrypt 암호화 사용
-
   }
-
-
 
   // 브라우저의 CORS 정책을 우회하여 다른 도메인에서의 API 접근 허용
   @Bean
@@ -159,7 +150,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     web.ignoring().antMatchers(
             "/assets/**",      // 정적 리소스
             "/*",              // 루트 경로의 파일들
-            "/api/member/**",   // 회원 관련 공개 API
+
+            // "/api/member/**",   // 회원 관련 공개 API
+            // 기능 개발 후에는 수정이 필요함
+            // 인증 요구하는게 많은지? 인증 요구하지 않는게 많은지?
+            // 인증 요구는
+            // POST :: /api/member - 가입
+            // PUT :: /api/member - 수정
+            // PUT :: /api/member/*/changepassword - 수정
+
             // Swagger 관련
             "/swagger-ui.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs"
     );

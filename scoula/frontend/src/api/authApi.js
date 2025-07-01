@@ -47,4 +47,13 @@ export default {
     console.log('AUTH PUT: ', data);
     return data;
   },
+
+  async changePassword(formData) {
+    const { data } = await api.put(
+      `${BASE_URL}/${formData.username}/changepassword`,
+      formData
+    );
+    console.log('AUTH PUT: ', data);
+    return data;
+  },
 };
