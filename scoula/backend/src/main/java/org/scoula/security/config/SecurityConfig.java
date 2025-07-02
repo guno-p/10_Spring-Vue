@@ -65,12 +65,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   // 문자셋 필터 메서드
-  public CharacterEncodingFilter encodingFilter() {
-    CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
-    encodingFilter.setEncoding("UTF-8");           // UTF-8 인코딩 설정
-    encodingFilter.setForceEncoding(true);         // 강제 인코딩 적용
-    return encodingFilter;
-  }
+//  public CharacterEncodingFilter encodingFilter() {
+//    CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
+//    encodingFilter.setEncoding("UTF-8");           // UTF-8 인코딩 설정
+//    encodingFilter.setForceEncoding(true);         // 강제 인코딩 적용
+//    return encodingFilter;
+//  }
 
   // AuthenticationManager 빈 등록 - JWT 토큰 인증에서 필요
   @Bean
@@ -84,7 +84,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // - CSRF 필터는 Spring Security 환경에서 기본적으로 활성화 되어있음!
     http
         // 문자 인코딩
-        .addFilterBefore(encodingFilter(), CsrfFilter.class)
+        // .addFilterBefore(encodingFilter(), CsrfFilter.class)
         // 인증 에러 필터
         .addFilterBefore(authenticationErrorFilter, UsernamePasswordAuthenticationFilter.class)
         // JWT 인증필터
@@ -116,7 +116,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       // 🔒 회원 관련 인증 필요 API
       .antMatchers(HttpMethod.PUT, "/api/member/**").authenticated() // 회원 정보 수정, 비밀번호 변경
 
-      .anyRequest().permitAll(); // 나머지 허용
+      .antMatchers(HttpMethod.POST, "/api/board/**").authenticated()
+      .antMatchers(HttpMethod.PUT, "/api/board/**").authenticated()
+      .antMatchers(HttpMethod.DELETE, "/api/board/**").authenticated()
+      .anyRequest().permitAll();
   }
 
   @Override
