@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.scoula.board.domain.BoardAttachmentVO;
+import org.scoula.common.pagination.Page;
+import org.scoula.common.pagination.PageRequest;
 import org.scoula.common.util.UploadFiles;
 import org.springframework.stereotype.Service;
 import org.scoula.board.domain.BoardVO;
@@ -143,4 +145,20 @@ public class BoardServiceImpl implements BoardService {
     }
   }
 
+
+  // 페이징된 게시글 목록 조회
+  @Override
+  public Page<BoardDTO> getPage(PageRequest pageRequest) {
+    // 1. 페이징된 게시글 목록 조회
+    List<BoardVO> boards = boardMapper.getPage(pageRequest);
+
+    // 2. 전체 게시글 수 조회
+    int totalCount = boardMapper.getTotalCount();
+
+    // 3. VO를 DTO로 변환하고 Page 객체 생성
+    return Page.of(pageRequest, totalCount,
+            boards.stream()
+                    .map(BoardDTO::of)  // VO → DTO 변환
+                    .toList());
+  }
 }

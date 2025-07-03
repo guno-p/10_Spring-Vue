@@ -4,6 +4,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Select;
 import org.scoula.board.domain.BoardAttachmentVO;
 import org.scoula.board.domain.BoardVO;
+import org.scoula.common.pagination.PageRequest;
 
 public interface BoardMapper {
   // 게시글 목록 조회 (어노테이션 방식)
@@ -36,6 +37,11 @@ public interface BoardMapper {
   // 특정 첨부 파일 1개 삭제
   public int deleteAttachment(Long no);
 
+  // === Pagination ===
+  // 전체 게시글 수 조회
+  int getTotalCount();
 
+  // 페이징된 게시글 목록 조회
+  List<BoardVO> getPage(PageRequest pageRequest);
 
 }

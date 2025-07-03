@@ -15,18 +15,18 @@ const article = ref({});
 
 // 페이지 이동 함수들
 const back = () => {
-  router.push({ name: 'board/list' });
+  router.push({ name: 'board/list', query: cr.query });
 };
 
 const update = () => {
-  router.push({ name: 'board/update', params: { no: no } });
+  router.push({ name: 'board/update', params: { no: no }, query: cr.query });
 };
 
 // 게시글 삭제
 const remove = async () => {
   if (!confirm('삭제할까요?')) return;
   await api.delete(no);
-  router.push({ name: 'board/list' });
+  router.push({ name: 'board/list', query: cr.query });
 };
 
 // 파일 다운로드

@@ -14,7 +14,7 @@ const files = ref(null);
 
 // 뒤로가기
 const back = () => {
-  router.push({ name: 'board/detail', params: { no } });
+  router.push({ name: 'board/detail', params: { no }, query: cr.query });
 };
 
 // 첨부파일 삭제
